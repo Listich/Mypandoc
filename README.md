@@ -6,6 +6,9 @@ Bienvenue dans **mypandoc**, un projet Haskell inspiré de [Pandoc](https://pand
 🎯 L’objectif est de parser un document d’un certain format (XML/JSON/Markdown) et de le convertir dans un autre.
 
 ---
+# Resultat mouli
+
+![alt text](<Screenshot From 2025-05-18 22-22-48.png>)
 
 ## 🚀 Fonctionnalités
 

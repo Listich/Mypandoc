@@ -62,12 +62,6 @@ test-suite mypandoc-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      JsonSpec
-      MarkdownSpec
-      MyPandocSpec
-      SimpleJsonToMarkdownSpec
-      SimpleXmlToMarkdownSpec
-      XmlSpec
       Paths_mypandoc
   autogen-modules:
       Paths_mypandoc
