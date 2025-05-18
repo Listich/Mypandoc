@@ -1,0 +1,16 @@
+Résumé de ce que l'on a deja fait :
+Moi:
+Toi :
+
+Parser.hs ✔️
+
+XmlParser.hs ✔️
+
+Main.hs ✔️
+
+MarkdownGenerator.hs (commencé mais pas terminé)
+
+Sven :
+
+JsonParser.hs (à fini)
+

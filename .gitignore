@@ -1,0 +1,6 @@
+.stack-work/
+*~
+MarkdownGenerator.txt
+examples
+test
+test_options.sh

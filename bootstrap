@@ -1,0 +1,95 @@
+{-
+-- EPITECH PROJECT, 2025
+-- B-FUN-400-TLS-4-1-mypandoc-serena.kifoula
+-- File description:
+-- Main
+-}
+
+module Main where
+
+type Parser a = String -> Maybe (a, String)
+
+parseChar :: Char -> Parser Char
+parseChar c = \input ->
+    case input of 
+        (x:xs) -> if x == c then Just (x, xs) else Nothing
+        []     -> Nothing
+
+parseOr :: Parser a -> Parser a -> Parser a
+parseOr p1 p2 input =
+    case p1 input of
+        Just res -> Just res
+        Nothing  -> p2 input
+
+parseAnyChar' :: String -> Parser Char
+parseAnyChar' []     = \_ -> Nothing
+parseAnyChar' (c:cs) = parseChar c `parseOr` parseAnyChar' cs
+
+parseAnd :: Parser a -> Parser b -> Parser (a, b)
+parseAnd p1 p2 input = 
+    case p1 input of
+        Nothing -> Nothing
+        Just (res1, rest1) ->
+            case p2 rest1 of
+                Nothing -> Nothing
+                Just (res2, rest2) -> Just ((res1, res2), rest2)
+
+parseAndWith :: (a -> b -> c) -> Parser a -> Parser b -> Parser c
+parseAndWith f p1 p2 input =
+    case parseAnd p1 p2 input of
+        Nothing -> Nothing
+        Just ((a, b), rest) -> Just (f a b, rest)
+
+parseMany :: Parser a -> Parser [a]
+parseMany p input = 
+    case p input of
+        Just (result, rest) ->
+            case parseMany p rest of
+                Just (more, finalRest) -> Just (result : more, finalRest)
+        _ -> Just ([], input)
+
+parseSome :: Parser a -> Parser [a]
+parseSome p input =
+    case p input of
+        Nothing -> Nothing
+        Just (x, rest) ->
+            case parseMany p rest of
+                Just (xs, finalRest) -> Just (x:xs, finalRest)
+
+parseUInt :: Parser Int
+parseUInt input =
+    case parseSome (parseAnyChar' ['0'..'9']) input of
+        Just (digits, rest) -> Just (read digits, rest)
+        Nothing -> Nothing
+
+parseInt :: Parser Int
+parseInt input =
+    case parseChar '-' input of
+        Just (_, rest) ->
+            case parseUInt rest of
+                Just (n, rest') -> Just (-n, rest')
+                Nothing -> Nothing
+        Nothing -> parseUInt input
+
+parseTuple :: Parser a -> Parser (a, a)
+parseTuple p input = do
+    ('(', rest1) <- parseChar '(' input
+    (x, rest2)   <- p rest1
+    (',', rest3) <- parseChar ',' rest2
+    (y, rest4)   <- p rest3
+    (')', rest5) <- parseChar ')' rest4
+    return ((x, y), rest5)
+
+main :: IO ()
+main = do 
+    print $ parseChar 'a' "abcd"
+    print $ parseChar 'z' "abcd"
+    print $ parseChar 'b' "abcd"
+    print $ parseChar 'a' "aaaa"
+    print $ parseAnyChar' "bca" "abcd"
+    print $ parseAnd (parseChar 'a') (parseChar 'b') "abcd"
+    print $ parseAndWith (\x y -> [x,y]) (parseChar 'a') (parseChar 'b') "abcd"
+    print $ parseMany (parseChar 'a') "aaabc"
+    print $ parseSome (parseChar 'a') "aaabc"
+    print $ parseInt "-42 abc"
+    print $ parseTuple parseInt "(-12,34) test"
